@@ -1,4 +1,3 @@
-// controller.js
 const getMessage = require('./service').getMessage;
 
 exports.ask = (req, res, next) => {

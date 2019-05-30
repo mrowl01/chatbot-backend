@@ -1,7 +1,12 @@
 require('dotenv').config();
 const express = require('express');
 const app = express();
-const AssistantV1 = require('ibm-watson/assistant/v1');
+app.use(function(req, res, next) {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  next();
+});
+
 const  bodyParser = require('body-parser'),
   DEFAULT_BODY_SIZE_LIMIT = 1024 * 1024 * 10,
   DEFAULT_PARAMETER_LIMIT = 10000;
@@ -13,31 +18,12 @@ const bodyParserJsonConfig = () => ({
 
 app.use(bodyParser.json(bodyParserJsonConfig()));
 
-// const service = new AssistantV1({
-//   version: process.env.WATSON_VERSION,
-//   iam_apikey: process.env.API,
-//   url: process.env.WATSON_URL
-// });
-const service = new AssistantV1({
-  version: process.env.WATSON_VERSION,
-  iam_apikey: process.env.API,
-  url: process.env.WATSON_URL
-});
+const ask = require('./controller').ask;
 
+app.get('/', (req, res) => res.send('it is working- backend for chatbot'))
+app.post('/ask', ask)
 
-service.message({
-  workspace_id: '83044c03-e3b5-4401-ac61-9565d4238a9c',
-  input: {'text': 'Hello what is this?'}
-  })
-  .then(res => {
-    console.log(JSON.stringify(res, null, 2));
-  })
-  .catch(err => {
-    console.log(err)
-  });
-
-
-app.listen(3000,function(){
+app.listen(3001,function(){
 	console.log('main.js is running port 3000');
 })
 
